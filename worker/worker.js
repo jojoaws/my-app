@@ -2,7 +2,7 @@ const AWS = require("aws-sdk");
 
 const sqs = new AWS.SQS({ region: "us-east-1" });
 
-const QUEUE_URL = "YOUR_SQS_QUEUE_URL";
+const QUEUE_URL = "https://sqs.us-east-1.amazonaws.com/677920913262/my-app-queue";
 
 console.log("Worker started...");
 
@@ -19,17 +19,17 @@ const pollQueue = async () => {
     if (data.Messages) {
       const message = data.Messages[0];
 
-      console.log("Processing message:", message.Body);
+      console.log("Processing:", message.Body);
 
       await sqs.deleteMessage({
         QueueUrl: QUEUE_URL,
         ReceiptHandle: message.ReceiptHandle,
       }).promise();
 
-      console.log("Message processed and deleted ✅");
+      console.log("Done ✅");
     }
   } catch (err) {
-    console.error("Error:", err);
+    console.error(err);
   }
 
   setTimeout(pollQueue, 2000);
