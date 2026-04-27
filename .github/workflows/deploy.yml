@@ -20,22 +20,27 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Login to ECR
-        run: |
-          aws ecr get-login-password --region ${{secrets.AWS_REGION }} | docker login --username AWS --password-stdin  ${{ secrets.ACCOUND_ID }}.dkr.ecr.${{ secrets.AWS_REGION}}.amazonaws.com
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build web image
-        run: docker build -t web .
+      - name: Build app image
+        run: docker build -t my-app .
+
+      - name: Tag app image
+        run: |
+          docker tag my-app:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/my-app:latest
+
+      - name: Push app image
+        run: |
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/my-app:latest
 
       - name: Build worker image
         run: docker build -f Dockerfile.worker -t worker .
 
-      - name: Tag & push web
+      - name: Tag worker image
         run: |
-          docker tag web:latest  ${{ secrets.ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/web:latest
-          docker push   ${{ secrets.ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/web:latest
+          docker tag worker:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/worker:latest
 
-      - name: Tag & push worker
+      - name: Push worker image
         run: |
-          docker tag worker:latest  ${{ secrets.ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/worker:latest
-          docker push ${{ secrets.ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/worker:latest
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/worker:latest
