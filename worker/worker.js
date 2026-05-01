@@ -16,7 +16,7 @@ const pollQueue = async () => {
   try {
     const data = await sqs.receiveMessage(params).promise();
 
-    if (data.Messages) {
+    if (data.Messages && data.Messages.length > 0) {
       const message = data.Messages[0];
 
       console.log("Processing:", message.Body);
@@ -27,7 +27,10 @@ const pollQueue = async () => {
       }).promise();
 
       console.log("Done ✅");
+  } else {
+      console.log("No messages...");
     }
+
   } catch (err) {
     console.error(err);
   }
