@@ -1,7 +1,6 @@
 const AWS = require("aws-sdk");
 
 const sqs = new AWS.SQS({ region: process.env.AWS_REGION });
-
 const QUEUE_URL = process.env.QUEUE_URL;
 
 console.log("Worker started...");
@@ -25,13 +24,11 @@ const pollQueue = async () => {
         QueueUrl: QUEUE_URL,
         ReceiptHandle: message.ReceiptHandle,
       }).promise();
-  }
 
       console.log("Done ✅");
-  } else {
+    } else {
       console.log("No messages...");
     }
-
   } catch (err) {
     console.error(err);
   }
