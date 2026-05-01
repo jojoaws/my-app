@@ -1,8 +1,8 @@
 const AWS = require("aws-sdk");
 
-const sqs = new AWS.SQS({ region: "us-east-1" });
+const sqs = new AWS.SQS({ region: process.env.AWS_REGION });
 
-const QUEUE_URL = "https://sqs.us-east-1.amazonaws.com/677920913262/my-app-queue";
+const QUEUE_URL = process.env.QUEUE_URL;
 
 console.log("Worker started...");
 
