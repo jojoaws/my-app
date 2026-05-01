@@ -21,11 +21,6 @@ const pollQueue = async () => {
 
       console.log("Processing:", message.Body);
 
-    if (message.Body.includes("FAIL")) {
-	throw new Error("Forced failure");
-  }
-
-    if (!message.Body.includes("FAIL")) {
       await sqs.deleteMessage({
         QueueUrl: QUEUE_URL,
         ReceiptHandle: message.ReceiptHandle,
