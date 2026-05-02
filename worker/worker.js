@@ -9,31 +9,32 @@ const pollQueue = async () => {
   const params = {
     QueueUrl: QUEUE_URL,
     MaxNumberOfMessages: 1,
-    WaitTimeSeconds: 10,
+    WaitTimeSeconds: 10, 
   };
 
-  try {
-    const data = await sqs.receiveMessage(params).promise();
+  while (true) {
+    try {
+      const data = await sqs.receiveMessage(params).promise();
 
-    if (data.Messages && data.Messages.length > 0) {
-      const message = data.Messages[0];
+      if (data.Messages && data.Messages.length > 0) {
+        const message = data.Messages[0];
 
-      console.log("Processing:", message.Body);
+        console.log("Processing:", message.Body);
 
-      await sqs.deleteMessage({
-        QueueUrl: QUEUE_URL,
-        ReceiptHandle: message.ReceiptHandle,
-      }).promise();
+        await sqs.deleteMessage({
+          QueueUrl: QUEUE_URL,
+          ReceiptHandle: message.ReceiptHandle,
+        }).promise();
 
-      console.log("Done ✅");
-    } else {
-      console.log("No messages...");
+        console.log("Done ✅");
+      } else {
+        console.log("No messages...");
+      }
+
+    } catch (err) {
+      console.error("Error:", err);
     }
-  } catch (err) {
-    console.error(err);
   }
-
-  setTimeout(pollQueue, 2000);
 };
 
 pollQueue();
