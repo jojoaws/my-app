@@ -8,8 +8,16 @@ const sqs = new AWS.SQS({
 const QUEUE_URL = process.env.QUEUE_URL;
 
 const server = http.createServer(async (req, res) => {
+
+
   if (req.url === "/") {
+    res.end("OK");
+  }
+
+  else if (req.url === "/job") {
+
     try {
+
       const params = {
         QueueUrl: QUEUE_URL,
         MessageBody: "Job from web 🚀",
@@ -20,13 +28,20 @@ const server = http.createServer(async (req, res) => {
       console.log("Message sent to SQS");
 
       res.end("Job sent 🚀");
+
     } catch (err) {
+
       console.error("SQS error:", err);
+
       res.statusCode = 500;
       res.end("Error sending job");
     }
-  } else {
-    res.end("OK");
+
+  }
+
+  else {
+    res.statusCode = 404;
+    res.end("Not found");
   }
 });
 
